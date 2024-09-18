@@ -1,0 +1,232 @@
+[gd_scene load_steps=20 format=3 uid="uid://ckr3ves873ya0"]
+
+[ext_resource type="Texture2D" uid="uid://c644qilfitw3f" path="res://Assets/Player/Player_TileSet.png" id="1_o8k6j"]
+
+[sub_resource type="GDScript" id="GDScript_uuqkd"]
+script/source = "extends CharacterBody2D
+
+
+const SPEED : float = 300.0
+
+# Clockwork direction (0 north, 1 east..)
+var direction : int = 2 # Facing south at the spawn
+var lastKnownDirection = direction
+
+func _physics_process(delta: float) -> void:
+
+	# Get the input direction and handle the movement/deceleration.
+	var directionX := Input.get_axis(\"ui_left\", \"ui_right\")
+	var directionY := Input.get_axis(\"ui_up\", \"ui_down\")
+	
+	# Determine wich direction we must face
+	if abs(directionX) > abs(directionY):
+		if directionX > 0:
+			direction = 1 # west
+		else:
+			direction = 3 # east
+		lastKnownDirection = direction # save the direction into a cache
+	elif abs(directionY) > abs(directionX):
+		if directionY > 0:
+			direction = 2 # south
+		else:
+			direction = 0 # north
+		lastKnownDirection = direction # save the direction into a cache
+		
+	elif directionX == 0 and directionY == 0: # Not moving at all,
+		direction = lastKnownDirection        # get the last known facing direction
+		
+	# Handle the horizontal movement
+	if directionX:
+		velocity.x = directionX * SPEED
+		play_anim(\"walk_horizontal\", direction)
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+	
+	# Handle the vertical movement
+	if directionY:
+		velocity.y = directionY * SPEED
+		if directionY < 0:
+			play_anim(\"walk_north\")
+		else: 
+			play_anim(\"walk_south\")
+	else:
+		velocity.y = move_toward(velocity.y, 0, SPEED)
+	
+	# Idle position handle
+	if velocity.length() == 0:
+		# 0 = north, 1 = east...
+		if direction == 0 :
+			play_anim(\"idle_north\")
+		elif direction == 1:
+			play_anim(\"idle_horizontal\", direction)
+		elif direction == 2:
+			play_anim(\"idle_south\")
+		else: # direction == 3
+			play_anim(\"idle_horizontal\")
+
+	move_and_slide()
+	
+# Launch the animation with it's string name and it's direction when needed
+func play_anim(anim_name : String, direction: int = 2):
+	$PlayerSprite.flip_h = true if direction == 1 else false
+	print(anim_name)
+	
+	$PlayerSprite.play(anim_name)
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i2d3v"]
+radius = 14.0
+height = 56.79
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfmnx"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(48, 128, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uk5iv"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(147, 256, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y0p6x"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(1, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bhmc5"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(4, 128, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_es56l"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(53, 128, 49, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k7sqc"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(101, 128, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qdmwd"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(151, 128, 49, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gqrd5"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(1, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0hh20"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(49, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vkk8f"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(97, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_15ko5"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(145, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wgqrw"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(1, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nmcco"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(49, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exbnt"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(97, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pe5mq"]
+atlas = ExtResource("1_o8k6j")
+region = Rect2(145, 0, 48, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4q8e7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfmnx")
+}],
+"loop": false,
+"name": &"idle_horizontal",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uk5iv")
+}],
+"loop": false,
+"name": &"idle_north",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y0p6x")
+}],
+"loop": false,
+"name": &"idle_south",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bhmc5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_es56l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k7sqc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qdmwd")
+}],
+"loop": true,
+"name": &"walk_horizontal",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqrd5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0hh20")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vkk8f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_15ko5")
+}],
+"loop": true,
+"name": &"walk_north",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wgqrw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nmcco")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exbnt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pe5mq")
+}],
+"loop": true,
+"name": &"walk_south",
+"speed": 10.0
+}]
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("GDScript_uuqkd")
+
+[node name="PlayerCollision" type="CollisionShape2D" parent="."]
+position = Vector2(-2.015, 3.865)
+shape = SubResource("CapsuleShape2D_i2d3v")
+
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_4q8e7")
+animation = &"walk_south"
+autoplay = "idle_south"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.7, 1.7)

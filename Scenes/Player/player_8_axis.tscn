@@ -1,0 +1,348 @@
+[gd_scene load_steps=30 format=3 uid="uid://fibn0unfakqw"]
+
+[ext_resource type="Texture2D" uid="uid://c644qilfitw3f" path="res://Assets/Player/Player_TileSet.png" id="1_8g3jx"]
+
+[sub_resource type="GDScript" id="GDScript_uuqkd"]
+script/source = "extends CharacterBody2D
+
+const SPEED : float = 300.0
+
+# Clockwork direction with 8-axis (0 north, 1 north-east..)
+var direction : int = 2 # Facing south at the spawn
+var lastKnownDirection: int = direction
+
+func _physics_process(delta: float) -> void:
+
+	# Get the input direction and handle the movement/deceleration.
+	var directionX := Input.get_axis(\"ui_left\", \"ui_right\")
+	var directionY := Input.get_axis(\"ui_up\", \"ui_down\")
+	
+
+	# Determine wich direction we must face
+	if directionX != 0 and directionY == 0:
+		velocity.x = directionX * SPEED
+		velocity.y = move_toward(velocity.y, 0, SPEED)
+		if directionX > 0:
+			direction = 2 # east
+			play_anim(\"walk_horizontal\", direction)
+			lastKnownDirection = direction # save the direction into a cache
+		else:
+			direction = 6 # west
+			play_anim(\"walk_horizontal\", direction)
+			lastKnownDirection = direction # save the direction into a cache
+	elif directionX == 0 and directionY != 0:
+		velocity.y = directionY * SPEED
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		if directionY > 0:
+			direction = 4 # south
+			play_anim(\"walk_south\")
+			lastKnownDirection = direction # save the direction into a cache
+		else:
+			direction = 0 # north
+			play_anim(\"walk_north\")
+			lastKnownDirection = direction # save the direction into a cache
+	# Now, the cases if we move in diagonals
+	elif directionX > 0:
+		velocity.y = directionY * SPEED
+		velocity.x = directionX * SPEED
+		if directionY > 0:
+			direction = 1 # north east
+			play_anim(\"walk_diagonals_south\", direction)
+			lastKnownDirection = direction # save the direction into a cache
+		else:
+			direction = 3 # south east
+			play_anim(\"walk_diagonals_north\", direction)
+			lastKnownDirection = direction # save the direction into a cache
+	elif directionX < 0:
+		velocity.y = directionY * SPEED
+		velocity.x = directionX * SPEED
+		if directionY > 0:
+			direction = 7 # north west
+			play_anim(\"walk_diagonals_south\", direction)
+			lastKnownDirection = direction # save the direction into a cache
+		else:
+			direction = 5 # south west
+			play_anim(\"walk_diagonals_north\", direction)
+			lastKnownDirection = direction # save the direction into a cache
+		
+	elif directionX == 0 and directionY == 0: # Not moving at all,
+		direction = lastKnownDirection        # get the last known facing direction
+		velocity.y = move_toward(velocity.y, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+	
+
+	# Idle position handle
+	if velocity.length() == 0:
+		# 0 = north, 1 = north east, same as above...
+		if direction == 0 :
+			play_anim(\"idle_north\")
+		elif direction == 1:
+			play_anim(\"idle_diagonals_south\", direction)
+		elif direction == 2:
+			play_anim(\"idle_horizontal\", direction)
+		elif direction == 3:
+			play_anim(\"idle_diagonals_north\", direction)
+		elif direction == 4:
+			play_anim(\"idle_south\", direction)
+		elif direction == 5:
+			play_anim(\"idle_diagonals_north\", direction)
+		elif direction == 6:
+			play_anim(\"idle_horizontal\", direction)
+		else: # direction == 7
+			play_anim(\"idle_diagonals_south\", direction)
+
+	move_and_slide()
+	
+# Launch the animation with it's string name and it's direction when needed
+func play_anim(anim_name : String, direction: int = 2):
+	$PlayerSprite.flip_h = true if direction > 0 and direction < 4 else false # if direction is oriented to the east
+	
+	$PlayerSprite.play(anim_name)
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i2d3v"]
+radius = 14.0
+height = 56.79
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fxt5"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(2, 192, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7b1d"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(2, 64, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfmnx"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(48, 128, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uk5iv"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(147, 256, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y0p6x"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(1, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y7apj"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(2, 192, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xabfs"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(48, 192, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i04gx"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(99, 192, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r0on8"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(144, 192, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o0n33"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(3, 64, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5v4l0"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(49, 64, 46, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c7w0l"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(104, 64, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3i2ny"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(149, 64, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bhmc5"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(4, 128, 45, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_es56l"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(53, 128, 49, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k7sqc"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(101, 128, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qdmwd"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(151, 128, 49, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gqrd5"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(1, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0hh20"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(49, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vkk8f"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(97, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_15ko5"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(145, 256, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wgqrw"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(1, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nmcco"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(49, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exbnt"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(97, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pe5mq"]
+atlas = ExtResource("1_8g3jx")
+region = Rect2(145, 0, 48, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4q8e7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5fxt5")
+}],
+"loop": false,
+"name": &"idle_diagonals_north",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7b1d")
+}],
+"loop": false,
+"name": &"idle_diagonals_south",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfmnx")
+}],
+"loop": false,
+"name": &"idle_horizontal",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uk5iv")
+}],
+"loop": false,
+"name": &"idle_north",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y0p6x")
+}],
+"loop": false,
+"name": &"idle_south",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y7apj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xabfs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i04gx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r0on8")
+}],
+"loop": true,
+"name": &"walk_diagonals_north",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o0n33")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5v4l0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c7w0l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3i2ny")
+}],
+"loop": true,
+"name": &"walk_diagonals_south",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bhmc5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_es56l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k7sqc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qdmwd")
+}],
+"loop": true,
+"name": &"walk_horizontal",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqrd5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0hh20")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vkk8f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_15ko5")
+}],
+"loop": true,
+"name": &"walk_north",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wgqrw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nmcco")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exbnt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pe5mq")
+}],
+"loop": true,
+"name": &"walk_south",
+"speed": 10.0
+}]
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("GDScript_uuqkd")
+
+[node name="PlayerCollision" type="CollisionShape2D" parent="."]
+position = Vector2(-2.015, 3.865)
+shape = SubResource("CapsuleShape2D_i2d3v")
+
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_4q8e7")
+animation = &"walk_diagonals_north"
+autoplay = "idle_south"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.7, 1.7)
