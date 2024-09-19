@@ -8,7 +8,7 @@ script/source = "extends CharacterBody2D
 const SPEED : float = 300.0
 
 # Clockwork direction with 8-axis (0 north, 1 north-east..)
-var direction : int = 2 # Facing south at the spawn
+var direction : int = 4 # Facing south at the spawn
 var lastKnownDirection: int = direction
 
 func _physics_process(delta: float) -> void:
@@ -17,7 +17,7 @@ func _physics_process(delta: float) -> void:
 	var directionX := Input.get_axis(\"ui_left\", \"ui_right\")
 	var directionY := Input.get_axis(\"ui_up\", \"ui_down\")
 	
-
+	
 	# Determine wich direction we must face
 	if directionX != 0 and directionY == 0:
 		velocity.x = directionX * SPEED
@@ -46,22 +46,22 @@ func _physics_process(delta: float) -> void:
 		velocity.y = directionY * SPEED
 		velocity.x = directionX * SPEED
 		if directionY > 0:
-			direction = 1 # north east
+			direction = 3 # south east
 			play_anim(\"walk_diagonals_south\", direction)
 			lastKnownDirection = direction # save the direction into a cache
 		else:
-			direction = 3 # south east
+			direction = 1 # north east
 			play_anim(\"walk_diagonals_north\", direction)
 			lastKnownDirection = direction # save the direction into a cache
 	elif directionX < 0:
 		velocity.y = directionY * SPEED
 		velocity.x = directionX * SPEED
 		if directionY > 0:
-			direction = 7 # north west
+			direction = 5 # south west
 			play_anim(\"walk_diagonals_south\", direction)
 			lastKnownDirection = direction # save the direction into a cache
 		else:
-			direction = 5 # south west
+			direction = 7 # north west
 			play_anim(\"walk_diagonals_north\", direction)
 			lastKnownDirection = direction # save the direction into a cache
 		
@@ -70,6 +70,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = move_toward(velocity.y, 0, SPEED)
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	
+	print(direction)
 
 	# Idle position handle
 	if velocity.length() == 0:
@@ -77,19 +78,19 @@ func _physics_process(delta: float) -> void:
 		if direction == 0 :
 			play_anim(\"idle_north\")
 		elif direction == 1:
-			play_anim(\"idle_diagonals_south\", direction)
+			play_anim(\"idle_diagonals_north\", direction)
 		elif direction == 2:
 			play_anim(\"idle_horizontal\", direction)
 		elif direction == 3:
-			play_anim(\"idle_diagonals_north\", direction)
+			play_anim(\"idle_diagonals_south\", direction)
 		elif direction == 4:
 			play_anim(\"idle_south\", direction)
 		elif direction == 5:
-			play_anim(\"idle_diagonals_north\", direction)
+			play_anim(\"idle_diagonals_south\", direction)
 		elif direction == 6:
 			play_anim(\"idle_horizontal\", direction)
 		else: # direction == 7
-			play_anim(\"idle_diagonals_south\", direction)
+			play_anim(\"idle_diagonals_north\", direction)
 
 	move_and_slide()
 	
