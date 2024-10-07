@@ -12,7 +12,8 @@ config_version=5
 
 config/name="Doom Survivor"
 run/main_scene="res://Scenes/Levels/Level1.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+run/main_loop_type="CustomMainLoop"
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 boot_splash/bg_color=Color(0.680715, 0.168424, 0.171988, 1)
 boot_splash/image="res://Assets/icon.png"
 boot_splash/use_filter=false
@@ -21,6 +22,10 @@ config/icon="res://Assets/icon.png"
 [dotnet]
 
 project/assembly_name="Doom Survivor"
+
+[global_group]
+
+Persist=""
 
 [rendering]
 
