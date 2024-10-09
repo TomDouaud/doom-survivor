@@ -18,7 +18,7 @@ public partial class LevelManager : Node
             GD.Print("Failed to load PackedScene: " + "res://Scenes/Levels/" + path);
             return;
         }
-        
         mainLoop.ChangeSceneToPacked(levelPacked);
-        }
+        
     }
+}
