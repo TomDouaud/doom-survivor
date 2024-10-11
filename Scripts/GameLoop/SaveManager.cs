@@ -1,6 +1,8 @@
 ﻿using Godot;
 using System;
+using System.IO;
 using Godot.Collections;
+using FileAccess = Godot.FileAccess;
 
 namespace DoomSurvivor.Scripts.GameLoop;
 
@@ -93,9 +95,10 @@ public partial class SaveManager : Node
                 playerNode.Position = new Vector2((float)nodeData["PlayerPosX"], (float)nodeData["PlayerPosY"]);
                 GD.Print($"Player position loaded: {playerNode.Position}");
             }
-            else if ((bool)newObject.Call("IsLevel"))
+            if (newObject.SceneFilePath.Contains("Levels"))
             {
-                levelManager.LoadLevel(nodeData["Filename"].ToString());
+                GD.Print("Loading level...");
+                levelManager.LoadLevel(Path.GetFileName(newObject.SceneFilePath));
             }
             else
             {
